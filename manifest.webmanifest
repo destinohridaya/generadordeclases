@@ -1,0 +1,25 @@
+{
+  "name": "Yoga 2.0",
+  "short_name": "Yoga 2.0",
+  "description": "Creador y planificador de clases de yoga para profesores.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F8F2EB",
+  "theme_color": "#C4683C",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

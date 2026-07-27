@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#C4683C">
+  <meta name="description" content="Yoga 2.0: creador y planificador de clases de yoga para profesores.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Yoga 2.0">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Yoga 2.0</title>
+</head>
+<body>
+  <div id="app" class="app-shell" aria-live="polite">
+    <header class="topbar">
+      <div>
+        <p class="brand-kicker">DESTINO HRIDAYA</p>
+        <h1 class="brand-title">Yoga 2.0</h1>
+      </div>
+      <button id="settingsBtn" class="icon-button" type="button" aria-label="Abrir configuración" title="Configuración">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </header>
+
+    <main id="mainContent" class="main-content"></main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item is-active" data-route="home" type="button">
+        <span aria-hidden="true">⌂</span><small>Inicio</small>
+      </button>
+      <button class="nav-item" data-route="create" type="button">
+        <span aria-hidden="true">✦</span><small>Crear</small>
+      </button>
+      <button class="nav-item" data-route="library" type="button">
+        <span aria-hidden="true">◫</span><small>Biblioteca</small>
+      </button>
+      <button class="nav-item" data-route="saved" type="button">
+        <span aria-hidden="true">♡</span><small>Mis clases</small>
+      </button>
+    </nav>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <template id="onboardingTemplate">
+    <div class="onboarding-wrap">
+      <section class="onboarding-card">
+        <div class="lotus-mark" aria-hidden="true">❁</div>
+        <p class="brand-kicker">DESTINO HRIDAYA</p>
+        <h2>Bienvenido a Yoga 2.0</h2>
+        <p class="lead">Tu estudio inteligente para crear clases con intención, estructura y una voz propia.</p>
+        <form id="onboardingForm" class="stack-form">
+          <label>
+            Tu nombre
+            <input id="teacherName" name="teacherName" type="text" autocomplete="name" maxlength="40" required placeholder="Ej. Belén">
+          </label>
+          <label>
+            Idioma habitual de tus clases
+            <select id="defaultLanguage" name="defaultLanguage">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <label>
+            Estilo principal
+            <select id="defaultStyle" name="defaultStyle">
+              <option value="hatha">Hatha</option>
+              <option value="vinyasa">Vinyasa</option>
+              <option value="yin">Yin</option>
+              <option value="restorative">Restaurativo</option>
+            </select>
+          </label>
+          <button class="primary-button" type="submit">Entrar a mi estudio</button>
+        </form>
+        <p class="microcopy">Tus datos y clases quedan guardados en este dispositivo.</p>
+      </section>
+    </div>
+  </template>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
