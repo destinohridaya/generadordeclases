@@ -530,3 +530,20 @@ window.YOGA_DATA.adaptationImages=[{"title": "Perro boca abajo con silla", "cate
 window.YOGA_DATA.accessibilityImages=[{"title": "Tadasana para embarazo", "category": "Embarazo", "image": "./images/accessibility/81_tadasana_pregnancy.webp"}, {"title": "Diosa para embarazo", "category": "Embarazo", "image": "./images/accessibility/82_goddess_pregnancy.webp"}, {"title": "Gato–vaca para embarazo", "category": "Embarazo", "image": "./images/accessibility/83_cat_cow_pregnancy.webp"}, {"title": "Apertura lateral para embarazo", "category": "Embarazo", "image": "./images/accessibility/84_side_opening_pregnancy.webp"}, {"title": "Secuencia suave con silla", "category": "Movilidad reducida", "image": "./images/accessibility/85_chair_sequence.webp"}, {"title": "Flexión adelante con silla", "category": "Movilidad reducida", "image": "./images/accessibility/86_uttanasana_chair.webp"}, {"title": "Torsión sentada con silla", "category": "Movilidad reducida", "image": "./images/accessibility/87_seated_twist_chair.webp"}, {"title": "Estiramiento lateral en silla", "category": "Movilidad reducida", "image": "./images/accessibility/88_side_stretch_chair.webp"}];
 window.YOGA_DATA.appImages={"library": "./images/app/89_portada_biblioteca.webp", "classMode": "./images/app/90_portada_modo_clase.webp", "saved": "./images/app/91_portada_mis_clases.webp", "hero": "./images/app/92_hero_yoga_2_0.webp"};
 window.YOGA_DATA.poses.forEach(pose => { pose.image = window.YOGA_DATA.poseImages[pose.id] || ''; });
+
+
+/* Resolución robusta de imágenes: usa el archivo integrado si la carpeta images no fue subida. */
+(() => {
+  const embedded = window.YOGA_IMAGE_ASSETS || {};
+  const resolveAsset = path => embedded[path] || path;
+  const data = window.YOGA_DATA;
+  data.poseImages = Object.fromEntries(Object.entries(data.poseImages || {}).map(([key, value]) => [key, resolveAsset(value)]));
+  Object.values(data.sequenceImages || {}).forEach(item => {
+    item.cover = resolveAsset(item.cover);
+    item.steps = resolveAsset(item.steps);
+  });
+  (data.adaptationImages || []).forEach(item => { item.image = resolveAsset(item.image); });
+  (data.accessibilityImages || []).forEach(item => { item.image = resolveAsset(item.image); });
+  Object.keys(data.appImages || {}).forEach(key => { data.appImages[key] = resolveAsset(data.appImages[key]); });
+  (data.poses || []).forEach(pose => { pose.image = data.poseImages[pose.id] || pose.image || ''; });
+})();

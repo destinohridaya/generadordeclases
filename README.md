@@ -97,3 +97,15 @@ Esta versión integra 86 imágenes optimizadas para web:
 - 4 imágenes generales para Inicio, Biblioteca, Modo clase y Mis clases.
 
 Las imágenes aparecen en la biblioteca, el editor de clases, el modo clase y las fichas de saludos. Se guardan en formato WebP para reducir el peso del repositorio y mejorar la velocidad en GitHub Pages. El service worker almacena los recursos esenciales y va guardando las imágenes a medida que se consultan.
+
+
+## Corrección v2.1: imágenes en GitHub Pages
+
+Esta versión incluye `image-assets.js`, que contiene un respaldo integrado de todas las imágenes. Por eso las imágenes se muestran incluso si GitHub no conserva correctamente la carpeta `images`.
+
+Para actualizar una publicación anterior:
+1. Reemplazá todos los archivos de la raíz por los de esta versión.
+2. Subí también `image-assets.js`.
+3. Conservá las carpetas `images` e `icons` cuando sea posible.
+4. Esperá a que GitHub Pages termine de publicar y recargá dos veces.
+5. Si seguís viendo una versión anterior, abrí la página en una ventana de incógnito o borrá los datos del sitio una sola vez.

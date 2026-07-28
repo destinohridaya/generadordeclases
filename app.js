@@ -126,6 +126,8 @@
     document.body.classList.add('is-onboarding');
     const template = document.getElementById('onboardingTemplate');
     main.replaceChildren(template.content.cloneNode(true));
+    const onboardingHero = main.querySelector('.onboarding-hero');
+    if (onboardingHero && DATA.appImages?.hero) onboardingHero.src = DATA.appImages.hero;
     document.getElementById('onboardingForm').addEventListener('submit', event => {
       event.preventDefault();
       const form = new FormData(event.currentTarget);
@@ -1688,7 +1690,7 @@
   function registerServiceWorker() {
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js').catch(error => console.warn('Service worker no disponible:', error));
+        navigator.serviceWorker.register('./service-worker.js?v=2.1', { updateViaCache: 'none' }).then(registration => registration.update()).catch(error => console.warn('Service worker no disponible:', error));
       });
     }
   }
