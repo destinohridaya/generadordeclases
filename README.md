@@ -1,4 +1,4 @@
-# Yoga 2.0
+# Yoga 2.0 — versión 2.0
 
 Yoga 2.0 es una mini app web mobile-first para profesores de yoga. Permite generar clases curadas por estilo, duración, nivel, intención, foco, intensidad, necesidades del grupo y materiales disponibles. Las clases pueden editarse, guardarse, duplicarse, marcarse como impartidas, imprimirse o recorrerse en modo clase con temporizador.
 
@@ -84,3 +84,16 @@ Esta versión incorpora secuencias completas y ordenadas:
 Cada saludo puede generarse en variante estándar, inicial, con silla, para movilidad reducida o adaptada para embarazo. El profesor puede elegir entre una y seis vueltas. Dentro del editor, el saludo funciona como un bloque protegido: se cambia de manera completa para preservar el orden, las transiciones y la lateralidad.
 
 Las adaptaciones son orientaciones pedagógicas generales. La variante para embarazo requiere autorización profesional y valoración individual. Yoga 2.0 no brinda diagnósticos ni reemplaza la formación o el criterio del profesor.
+
+
+## Actualización 2.0 — biblioteca visual completa
+
+Esta versión integra 86 imágenes optimizadas para web:
+
+- 56 imágenes de asanas principales.
+- 8 imágenes de saludos solares y lunares (portada y pasos).
+- 10 imágenes de adaptaciones con silla, bloques, pared y bolster.
+- 8 imágenes para embarazo y movilidad reducida.
+- 4 imágenes generales para Inicio, Biblioteca, Modo clase y Mis clases.
+
+Las imágenes aparecen en la biblioteca, el editor de clases, el modo clase y las fichas de saludos. Se guardan en formato WebP para reducir el peso del repositorio y mejorar la velocidad en GitHub Pages. El service worker almacena los recursos esenciales y va guardando las imágenes a medida que se consultan.

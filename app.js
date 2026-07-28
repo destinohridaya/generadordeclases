@@ -171,13 +171,14 @@
     const favoriteStyle = mostFrequent(savedClasses.map(item => item.criteria.style));
 
     main.innerHTML = `
-      <section class="hero-panel">
-        <div>
+      <section class="hero-panel visual-hero">
+        <div class="hero-copy">
           <p class="eyebrow">${escapeHTML(formatDate())}</p>
           <h2>Hola, ${escapeHTML(profile.name)}</h2>
           <p>Diseñá una clase con intención, adaptala a tu grupo y conservá tu propia voz como docente.</p>
+          <button class="primary-button compact" id="quickCreateBtn" type="button">✦ Crear clase</button>
         </div>
-        <button class="primary-button compact" id="quickCreateBtn" type="button">✦ Crear clase</button>
+        <img class="hero-app-image" src="${DATA.appImages.hero}" alt="Yoga 2.0, estudio visual para profesores de yoga">
       </section>
 
       <section class="metrics-grid" aria-label="Resumen de actividad">
@@ -878,6 +879,7 @@
         </div>
         ${sequence ? `
           <div class="salutation-summary">
+            ${DATA.sequenceImages[sequence.id] ? `<img class="salutation-inline-image" src="${DATA.sequenceImages[sequence.id].steps}" alt="${escapeHTML(sequence.nameEs)} paso a paso">` : ''}
             <div><span class="sequence-badge">Secuencia protegida</span><strong>${escapeHTML(lang === 'en' ? sequence.variantEn : sequence.variantEs)}</strong></div>
             <p>${escapeHTML(lang === 'en' ? sequence.sidePatternEn : sequence.sidePatternEs)}</p>
             <p><strong>Guía:</strong> ${escapeHTML(lang === 'en' ? sequence.guidanceEn : sequence.guidanceEs)}</p>
@@ -910,10 +912,12 @@
     const groupNote = getGroupAdaptation(pose, currentDraft.criteria.groupNeed, lang);
     const displaySide = localizedSide(item.side, lang);
     const sideText = displaySide ? `<span class="side-tag">${escapeHTML(displaySide)}</span>` : '';
+    const visual = pose.image ? `<img class="pose-row-image" src="${pose.image}" alt="${escapeHTML(name)} — ${escapeHTML(pose.sanskrit)}" loading="lazy">` : `<div class="pose-image-fallback" aria-hidden="true">❁</div>`;
 
     return `
       <article class="pose-row ${locked ? 'is-locked-step' : ''}" data-block-index="${blockIndex}" data-pose-index="${poseIndex}">
         <div class="pose-time"><strong>${escapeHTML(formatPracticeTime(item.minutes))}</strong><span>${item.sequenceStep ? 'por paso' : 'sugerido'}</span></div>
+        <div class="pose-visual">${visual}</div>
         <div class="pose-content">
           <div class="pose-title-line">
             <div>
@@ -1202,17 +1206,30 @@
   }
 
   function renderLibrary() {
+    const gallery = (items, className = '') => items.map(item => `
+      <article class="visual-resource-card ${className}">
+        <img src="${item.image}" alt="${escapeHTML(item.title)}" loading="lazy">
+        <div><span>${escapeHTML(item.category)}</span><h4>${escapeHTML(item.title)}</h4></div>
+      </article>`).join('');
+
     main.innerHTML = `
-      <section class="page-heading">
-        <p class="eyebrow">BIBLIOTECA PROFESIONAL</p>
-        <h2>Asanas y recursos</h2>
-        <p>Consultá indicaciones, variantes generales y cuidados. Usá esta biblioteca como apoyo a tu formación, no como sustituto de valoración individual.</p>
+      <section class="page-visual-banner">
+        <img src="${DATA.appImages.library}" alt="Biblioteca visual de Yoga 2.0">
+        <div><p class="eyebrow">BIBLIOTECA PROFESIONAL</p><h2>Asanas y recursos</h2><p>Consultá imágenes, indicaciones, variantes generales y cuidados. Usá esta biblioteca como apoyo a tu formación, no como sustituto de valoración individual.</p></div>
       </section>
       <section class="section-block">
         <div class="section-heading"><div><p class="eyebrow">SECUENCIAS COMPLETAS</p><h3>Saludos solares y lunares</h3></div></div>
         <div class="salutation-library-grid">
           ${DATA.salutations.filter(item => !['auto','none'].includes(item.id)).map(item => salutationLibraryCard(item)).join('')}
         </div>
+      </section>
+      <section class="section-block">
+        <div class="section-heading"><div><p class="eyebrow">ADAPTACIONES</p><h3>Uso de apoyos</h3></div></div>
+        <div class="visual-resource-grid">${gallery(DATA.adaptationImages)}</div>
+      </section>
+      <section class="section-block">
+        <div class="section-heading"><div><p class="eyebrow">PRÁCTICA ACCESIBLE</p><h3>Embarazo y movilidad reducida</h3></div></div>
+        <div class="visual-resource-grid">${gallery(DATA.accessibilityImages, 'is-accessible')}</div>
       </section>
       <section class="filter-panel">
         <label>Buscar
@@ -1226,12 +1243,7 @@
             </select>
           </label>
           <label>Nivel
-            <select id="levelFilter">
-              <option value="all">Todos</option>
-              <option value="1">Inicial</option>
-              <option value="2">Intermedio</option>
-              <option value="3">Avanzado</option>
-            </select>
+            <select id="levelFilter"><option value="all">Todos</option><option value="1">Inicial</option><option value="2">Intermedio</option><option value="3">Avanzado</option></select>
           </label>
         </div>
       </section>
@@ -1248,58 +1260,46 @@
         return (!query || text.includes(query)) && (family.value === 'all' || pose.family === family.value) && (level.value === 'all' || String(pose.level) === level.value);
       });
       document.getElementById('libraryGrid').innerHTML = filtered.map(pose => libraryCard(pose)).join('') || emptyState('No encontramos posturas con esos filtros.', 'Limpiar filtros', 'clearLibraryFilters');
-      document.getElementById('clearLibraryFilters')?.addEventListener('click', () => {
-        search.value = ''; family.value = 'all'; level.value = 'all'; update();
-      });
+      document.getElementById('clearLibraryFilters')?.addEventListener('click', () => { search.value = ''; family.value = 'all'; level.value = 'all'; update(); });
     };
-    search.addEventListener('input', update);
-    family.addEventListener('change', update);
-    level.addEventListener('change', update);
-    update();
+    search.addEventListener('input', update); family.addEventListener('change', update); level.addEventListener('change', update); update();
   }
 
   function salutationLibraryCard(item) {
     const summaries = {
-      'sun-a': 'Flujo simétrico de 12 pasos. Ideal para preparar y elevar el ritmo de una práctica Hatha o Vinyasa.',
-      'sun-b': 'Flujo dinámico con Silla y Guerrero I a ambos lados. Aumenta la demanda de fuerza y coordinación.',
-      'sun-classic': 'Forma tradicional de Hatha: doce posiciones que se repiten cambiando la pierna que inicia.',
-      'moon': 'Secuencia lateral y circular que recorre ambos lados con Estrella, Diosa, Triángulo y estocadas.'
+      'sun-a': 'Flujo simétrico para preparar y elevar el ritmo de una práctica Hatha o Vinyasa.',
+      'sun-b': 'Flujo dinámico con Silla y Guerrero I a ambos lados.',
+      'sun-classic': 'Forma tradicional de Hatha con doce posiciones y cambio de pierna.',
+      'moon': 'Secuencia lateral y circular que recorre ambos lados con suavidad.'
     };
+    const images = DATA.sequenceImages[item.id];
     return `
-      <article class="salutation-library-card">
-        <span class="sequence-symbol">${item.id === 'moon' ? '☾' : '☼'}</span>
-        <div><h4>${escapeHTML(item.es)}</h4><p>${escapeHTML(summaries[item.id])}</p><small>Variantes: estándar, inicial, silla, movilidad reducida y embarazo.</small></div>
-      </article>
-    `;
+      <article class="salutation-library-card visual-salutation-card">
+        ${images ? `<img src="${images.cover}" alt="Portada de ${escapeHTML(item.es)}" loading="lazy">` : ''}
+        <div><h4>${escapeHTML(item.es)}</h4><p>${escapeHTML(summaries[item.id])}</p><small>Variantes: estándar, inicial, silla, movilidad reducida y embarazo.</small>
+          ${images ? `<details><summary>Ver secuencia visual</summary><img class="salutation-steps-image" src="${images.steps}" alt="Pasos de ${escapeHTML(item.es)}" loading="lazy"></details>` : ''}
+        </div>
+      </article>`;
   }
 
   function libraryCard(pose) {
     return `
-      <article class="library-card">
-        <div class="pose-title-line">
-          <div><h3>${escapeHTML(pose.es)}</h3><p class="sanskrit">${escapeHTML(pose.sanskrit)}</p></div>
-          <span class="level-dot">N${pose.level}</span>
+      <article class="library-card visual-library-card">
+        ${pose.image ? `<img class="library-pose-image" src="${pose.image}" alt="${escapeHTML(pose.es)} — ${escapeHTML(pose.sanskrit)}" loading="lazy">` : `<div class="library-image-fallback" aria-hidden="true">❁</div>`}
+        <div class="library-card-body">
+          <div class="pose-title-line"><div><h3>${escapeHTML(pose.es)}</h3><p class="sanskrit">${escapeHTML(pose.sanskrit)}</p></div><span class="level-dot">N${pose.level}</span></div>
+          <div class="tag-row"><span>${escapeHTML(familyLabel(pose.family))}</span>${pose.focus.slice(0,2).map(focus => `<span>${escapeHTML(labelFrom(DATA.focusAreas, focus))}</span>`).join('')}</div>
+          <p>${escapeHTML(pose.cueEs)}</p>
+          <details><summary>Ver adaptación y atención</summary><p><strong>Adaptación:</strong> ${escapeHTML(pose.adaptationEs)}</p><p><strong>Atención:</strong> ${escapeHTML(pose.cautionEs)}</p></details>
         </div>
-        <div class="tag-row">
-          <span>${escapeHTML(familyLabel(pose.family))}</span>
-          ${pose.focus.slice(0, 2).map(focus => `<span>${escapeHTML(labelFrom(DATA.focusAreas, focus))}</span>`).join('')}
-        </div>
-        <p>${escapeHTML(pose.cueEs)}</p>
-        <details>
-          <summary>Ver adaptación y atención</summary>
-          <p><strong>Adaptación:</strong> ${escapeHTML(pose.adaptationEs)}</p>
-          <p><strong>Atención:</strong> ${escapeHTML(pose.cautionEs)}</p>
-        </details>
-      </article>
-    `;
+      </article>`;
   }
 
   function renderSaved() {
     main.innerHTML = `
-      <section class="page-heading">
-        <p class="eyebrow">TU ARCHIVO DOCENTE</p>
-        <h2>Mis clases</h2>
-        <p>Guardá, duplicá y marcá como impartidas tus secuencias. Todo queda disponible en este dispositivo.</p>
+      <section class="page-visual-banner compact-banner">
+        <img src="${DATA.appImages.saved}" alt="Mis clases en Yoga 2.0">
+        <div><p class="eyebrow">TU ARCHIVO DOCENTE</p><h2>Mis clases</h2><p>Guardá, duplicá y marcá como impartidas tus secuencias. Todo queda disponible en este dispositivo.</p></div>
       </section>
       <section class="filter-panel saved-filters">
         <label>Buscar clase
@@ -1601,6 +1601,7 @@
               <button class="icon-button" id="closeClassMode" type="button" aria-label="Cerrar modo clase">×</button>
             </header>
             <main>
+              ${pose.image ? `<img class="class-mode-pose-image" src="${pose.image}" alt="${escapeHTML((lang === 'en' ? pose.en : pose.es))}">` : ''}
               <p class="sanskrit large">${escapeHTML(pose.sanskrit)}${item.side ? ` · ${escapeHTML(localizedSide(item.side, lang))}` : ''}</p>
               <h3>${escapeHTML((lang === 'en' ? item.stepNameEn : item.stepNameEs) || (lang === 'en' ? pose.en : pose.es))}</h3>
               <p class="class-mode-cue">${escapeHTML((lang === 'en' ? item.stepCueEn : item.stepCueEs) || (lang === 'en' ? pose.cueEn : pose.cueEs))}</p>

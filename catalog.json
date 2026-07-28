@@ -1,0 +1,186 @@
+{
+  "version": "2.0",
+  "poseImages": {
+    "easy-seat": "./images/asanas/01_sukhasana.webp",
+    "mountain": "./images/asanas/02_tadasana.webp",
+    "prayer": "./images/asanas/03_anjali_mudra.webp",
+    "raised-arms": "./images/asanas/04_urdhva_hastasana.webp",
+    "forward-fold": "./images/asanas/05_uttanasana.webp",
+    "half-lift": "./images/asanas/06_ardha_uttanasana.webp",
+    "table": "./images/asanas/07_bharmanasana.webp",
+    "cat": "./images/asanas/08_marjaryasana.webp",
+    "cow": "./images/asanas/09_bitilasana.webp",
+    "child": "./images/asanas/10_balasana.webp",
+    "plank": "./images/asanas/11_phalakasana.webp",
+    "forearm-plank": "./images/asanas/11_phalakasana.webp",
+    "chaturanga": "./images/asanas/12_chaturanga_dandasana.webp",
+    "knees-chest-chin": "./images/asanas/13_ashtanga_namaskara.webp",
+    "cobra": "./images/asanas/14_bhujangasana.webp",
+    "up-dog": "./images/asanas/15_urdhva_mukha_svanasana.webp",
+    "down-dog": "./images/asanas/16_adho_mukha_svanasana.webp",
+    "runner-lunge": "./images/asanas/17_ashwa_sanchalanasana.webp",
+    "low-lunge": "./images/asanas/18_anjaneyasana.webp",
+    "high-lunge": "./images/asanas/19_crescent_lunge.webp",
+    "chair": "./images/asanas/20_utkatasana.webp",
+    "warrior1": "./images/asanas/21_virabhadrasana_i.webp",
+    "warrior2": "./images/asanas/22_virabhadrasana_ii.webp",
+    "warrior3": "./images/asanas/23_virabhadrasana_iii.webp",
+    "reverse-warrior": "./images/asanas/24_reverse_warrior.webp",
+    "triangle": "./images/asanas/25_trikonasana.webp",
+    "side-angle": "./images/asanas/26_parsvakonasana.webp",
+    "pyramid": "./images/asanas/27_parsvottanasana.webp",
+    "wide-fold": "./images/asanas/28_prasarita_padottanasana.webp",
+    "half-moon": "./images/asanas/29_ardha_chandrasana.webp",
+    "goddess": "./images/asanas/30_utkata_konasana.webp",
+    "staff": "./images/asanas/31_dandasana.webp",
+    "butterfly": "./images/asanas/32_baddha_konasana.webp",
+    "head-to-knee": "./images/asanas/33_janu_sirsasana.webp",
+    "seated-fold": "./images/asanas/34_paschimottanasana.webp",
+    "dragonfly": "./images/asanas/35_upavistha_konasana.webp",
+    "cow-face": "./images/asanas/36_gomukhasana.webp",
+    "pigeon": "./images/asanas/37_pigeon_prep.webp",
+    "fire-log": "./images/asanas/38_agnistambhasana.webp",
+    "figure-four": "./images/asanas/38_agnistambhasana.webp",
+    "caterpillar": "./images/asanas/39_caterpillar.webp",
+    "dragon": "./images/asanas/40_dragon.webp",
+    "lizard": "./images/asanas/40_dragon.webp",
+    "shoelace": "./images/asanas/41_shoelace_pose.webp",
+    "deer": "./images/asanas/41_shoelace_pose.webp",
+    "seated-twist": "./images/asanas/42_ardha_matsyendrasana.webp",
+    "supine-twist": "./images/asanas/43_jathara_parivartanasana.webp",
+    "sphinx": "./images/asanas/44_sphinx_pose.webp",
+    "locust": "./images/asanas/45_salabhasana.webp",
+    "camel": "./images/asanas/46_ustrasana.webp",
+    "bridge": "./images/asanas/47_setu_bandha_sarvangasana.webp",
+    "supported-bridge": "./images/asanas/47_setu_bandha_sarvangasana.webp",
+    "fish": "./images/asanas/48_matsyasana.webp",
+    "puppy": "./images/asanas/49_uttana_shishosana.webp",
+    "thread-needle": "./images/asanas/50_thread_the_needle.webp",
+    "reclined-butterfly": "./images/asanas/51_supta_baddha_konasana.webp",
+    "legs-wall": "./images/asanas/52_viparita_karani.webp",
+    "knees-chest": "./images/asanas/53_apanasana.webp",
+    "savasana": "./images/asanas/54_savasana.webp",
+    "star": "./images/asanas/55_star_pose.webp",
+    "side-lunge": "./images/asanas/56_skandasana.webp",
+    "supported-child": "./images/adaptations/78_child_support.webp",
+    "standing-side-bend": "./images/accessibility/84_side_opening_pregnancy.webp"
+  },
+  "sequenceImages": {
+    "sun-a": {
+      "cover": "./images/sequences/57_saludo_sol_a_portada.webp",
+      "steps": "./images/sequences/58_saludo_sol_a_pasos.webp"
+    },
+    "sun-b": {
+      "cover": "./images/sequences/59_saludo_sol_b_portada.webp",
+      "steps": "./images/sequences/60_saludo_sol_b_pasos.webp"
+    },
+    "sun-classic": {
+      "cover": "./images/sequences/61_saludo_sol_hatha_portada.webp",
+      "steps": "./images/sequences/62_saludo_sol_hatha_pasos.webp"
+    },
+    "moon": {
+      "cover": "./images/sequences/63_saludo_luna_portada.webp",
+      "steps": "./images/sequences/64_saludo_luna_pasos.webp"
+    }
+  },
+  "adaptations": [
+    {
+      "title": "Perro boca abajo con silla",
+      "category": "Apoyo y descarga",
+      "image": "./images/adaptations/71_down_dog_chair.webp"
+    },
+    {
+      "title": "Uttanasana con bloques",
+      "category": "Bloques",
+      "image": "./images/adaptations/72_uttanasana_blocks.webp"
+    },
+    {
+      "title": "Guerrero II con silla",
+      "category": "Silla",
+      "image": "./images/adaptations/73_warrior2_chair.webp"
+    },
+    {
+      "title": "Triángulo con bloque",
+      "category": "Bloque",
+      "image": "./images/adaptations/74_triangle_block.webp"
+    },
+    {
+      "title": "Mariposa restaurativa",
+      "category": "Bolster",
+      "image": "./images/adaptations/75_butterfly_restorative.webp"
+    },
+    {
+      "title": "Supta Baddha Konasana con soporte",
+      "category": "Soportes",
+      "image": "./images/adaptations/76_supta_baddha_support.webp"
+    },
+    {
+      "title": "Viparita Karani con pared",
+      "category": "Pared",
+      "image": "./images/adaptations/77_viparita_wall.webp"
+    },
+    {
+      "title": "Postura del niño con soporte",
+      "category": "Bolster",
+      "image": "./images/adaptations/78_child_support.webp"
+    },
+    {
+      "title": "Savasana con bolster",
+      "category": "Bolster",
+      "image": "./images/adaptations/79_savasana_bolster.webp"
+    },
+    {
+      "title": "Estocada baja con apoyo",
+      "category": "Silla",
+      "image": "./images/adaptations/80_low_lunge_support.webp"
+    }
+  ],
+  "accessibility": [
+    {
+      "title": "Tadasana para embarazo",
+      "category": "Embarazo",
+      "image": "./images/accessibility/81_tadasana_pregnancy.webp"
+    },
+    {
+      "title": "Diosa para embarazo",
+      "category": "Embarazo",
+      "image": "./images/accessibility/82_goddess_pregnancy.webp"
+    },
+    {
+      "title": "Gato–vaca para embarazo",
+      "category": "Embarazo",
+      "image": "./images/accessibility/83_cat_cow_pregnancy.webp"
+    },
+    {
+      "title": "Apertura lateral para embarazo",
+      "category": "Embarazo",
+      "image": "./images/accessibility/84_side_opening_pregnancy.webp"
+    },
+    {
+      "title": "Secuencia suave con silla",
+      "category": "Movilidad reducida",
+      "image": "./images/accessibility/85_chair_sequence.webp"
+    },
+    {
+      "title": "Flexión adelante con silla",
+      "category": "Movilidad reducida",
+      "image": "./images/accessibility/86_uttanasana_chair.webp"
+    },
+    {
+      "title": "Torsión sentada con silla",
+      "category": "Movilidad reducida",
+      "image": "./images/accessibility/87_seated_twist_chair.webp"
+    },
+    {
+      "title": "Estiramiento lateral en silla",
+      "category": "Movilidad reducida",
+      "image": "./images/accessibility/88_side_stretch_chair.webp"
+    }
+  ],
+  "appImages": {
+    "library": "./images/app/89_portada_biblioteca.webp",
+    "classMode": "./images/app/90_portada_modo_clase.webp",
+    "saved": "./images/app/91_portada_mis_clases.webp",
+    "hero": "./images/app/92_hero_yoga_2_0.webp"
+  }
+}
