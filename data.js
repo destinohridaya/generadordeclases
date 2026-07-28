@@ -368,6 +368,87 @@ window.YOGA_DATA = {
       adaptationEs: 'Flexioná rodillas o sentate sobre una manta.', adaptationEn: 'Bend the knees or sit on a blanket.',
       cautionEs: 'No busques una sensación intensa en la inserción de los isquiotibiales.', cautionEn: 'Avoid intense sensation at the hamstring attachment.'
     },
+
+    {
+      id: 'prayer', sanskrit: 'Pranamasana', es: 'Gesto de saludo', en: 'Prayer Pose', family: 'standing', level: 1,
+      styles: ['hatha','vinyasa'], focus: ['whole','calm','focus'], intensity: 1,
+      cueEs: 'Reuní las palmas frente al corazón, sentí el apoyo de los pies y dejá que la respiración organice el comienzo.',
+      cueEn: 'Bring the palms together at the heart, feel the support of the feet, and let the breath organize the beginning.',
+      adaptationEs: 'Practicá sentado o con la espalda apoyada en la pared.', adaptationEn: 'Practice seated or with the back supported by a wall.',
+      cautionEs: 'Mantené los hombros suaves y la respiración libre.', cautionEn: 'Keep the shoulders soft and the breath unrestricted.'
+    },
+    {
+      id: 'raised-arms', sanskrit: 'Urdhva Hastasana', es: 'Brazos elevados', en: 'Upward Salute', family: 'standing', level: 1,
+      styles: ['hatha','vinyasa'], focus: ['whole','shoulders','back'], intensity: 1,
+      cueEs: 'Enraizá los pies y elevá los brazos sin comprimir la zona lumbar; crecé desde ambos costados del torso.',
+      cueEn: 'Root through the feet and lift the arms without compressing the lower back; lengthen both sides of the torso.',
+      adaptationEs: 'Separá las manos, flexioná codos o elevá un brazo por vez.', adaptationEn: 'Separate the hands, bend the elbows, or lift one arm at a time.',
+      cautionEs: 'Reducí el rango si hay dolor en hombros o cuello.', cautionEn: 'Reduce the range if there is shoulder or neck pain.'
+    },
+    {
+      id: 'chaturanga', sanskrit: 'Chaturanga Dandasana', es: 'Plancha baja', en: 'Four-Limbed Staff Pose', family: 'strength', level: 2,
+      styles: ['hatha','vinyasa'], focus: ['core','shoulders','whole'], intensity: 3,
+      cueEs: 'Desde plancha, mantené el cuerpo largo y flexioná los codos cerca del torso hasta un rango estable.',
+      cueEn: 'From plank, keep the body long and bend the elbows close to the ribs only to a stable range.',
+      adaptationEs: 'Apoyá rodillas o reemplazá por rodillas–pecho–mentón.', adaptationEn: 'Lower the knees or replace with knees–chest–chin.',
+      cautionEs: 'Evitá hundir hombros o zona lumbar; omití si no existe control suficiente.', cautionEn: 'Avoid collapsing the shoulders or lower back; skip when control is insufficient.'
+    },
+    {
+      id: 'knees-chest-chin', sanskrit: 'Ashtanga Namaskara', es: 'Rodillas, pecho y mentón', en: 'Knees–Chest–Chin', family: 'strength', level: 1,
+      styles: ['hatha','vinyasa'], focus: ['shoulders','back','whole'], intensity: 2,
+      cueEs: 'Apoyá rodillas, acercá el pecho entre las manos y mantené la pelvis elevada mientras el mentón toca suavemente.',
+      cueEn: 'Lower the knees, bring the chest between the hands, and keep the hips lifted as the chin touches lightly.',
+      adaptationEs: 'Reemplazá por una cobra baja desde el suelo o una extensión de pie con apoyo.', adaptationEn: 'Replace with low cobra or a supported standing backbend.',
+      cautionEs: 'Evitá esta transición si genera presión cervical, de hombros o muñecas.', cautionEn: 'Avoid this transition if it creates neck, shoulder, or wrist pressure.'
+    },
+    {
+      id: 'up-dog', sanskrit: 'Urdhva Mukha Svanasana', es: 'Perro boca arriba', en: 'Upward-Facing Dog', family: 'backbend', level: 2,
+      styles: ['hatha','vinyasa'], focus: ['back','shoulders','whole'], intensity: 3,
+      cueEs: 'Presioná manos y empeines, elevá muslos y esternón, y distribuí la extensión a lo largo de toda la columna.',
+      cueEn: 'Press through hands and tops of feet, lift thighs and sternum, and distribute the backbend through the whole spine.',
+      adaptationEs: 'Elegí cobra baja o esfinge.', adaptationEn: 'Choose low cobra or sphinx.',
+      cautionEs: 'No profundices si aparece compresión lumbar o molestias en muñecas.', cautionEn: 'Do not deepen if there is lumbar compression or wrist discomfort.'
+    },
+    {
+      id: 'star', sanskrit: 'Utthita Tadasana', es: 'Estrella', en: 'Five-Pointed Star', family: 'standing', level: 1,
+      styles: ['hatha','vinyasa'], focus: ['whole','legs','shoulders'], intensity: 1,
+      cueEs: 'Separá ampliamente los pies, extendé los brazos y ocupá el espacio con una base firme y respiración amplia.',
+      cueEn: 'Step the feet wide, extend the arms, and take up space with a steady base and spacious breath.',
+      adaptationEs: 'Reducí la separación de los pies o apoyá una mano en la pared.', adaptationEn: 'Narrow the stance or place one hand on a wall.',
+      cautionEs: 'Mantené rodillas y pies orientados en la misma dirección.', cautionEn: 'Keep knees and feet tracking in the same direction.'
+    },
+    {
+      id: 'goddess', sanskrit: 'Utkata Konasana', es: 'Diosa', en: 'Goddess Pose', family: 'standing', level: 1,
+      styles: ['hatha','vinyasa'], focus: ['hips','legs','whole'], intensity: 2,
+      cueEs: 'Flexioná las rodillas sobre la línea de los pies, mantené la pelvis neutra y el torso vertical.',
+      cueEn: 'Bend the knees in line with the feet, keep the pelvis neutral, and stay upright through the torso.',
+      adaptationEs: 'Disminuí la profundidad o apoyá las manos en el respaldo de una silla.', adaptationEn: 'Reduce depth or rest the hands on a chair back.',
+      cautionEs: 'Ajustá el rango ante molestias en rodillas, caderas o pelvis.', cautionEn: 'Adjust the range for knee, hip, or pelvic discomfort.'
+    },
+    {
+      id: 'pyramid', sanskrit: 'Parsvottanasana', es: 'Pirámide', en: 'Pyramid Pose', family: 'standing', level: 2,
+      styles: ['hatha','vinyasa'], focus: ['legs','back','balance'], intensity: 2,
+      cueEs: 'Acortá la base, orientá la pelvis hacia adelante y alargá el torso antes de inclinarte.',
+      cueEn: 'Shorten the stance, orient the pelvis forward, and lengthen the torso before folding.',
+      adaptationEs: 'Usá bloques altos o una silla y flexioná suavemente la rodilla delantera.', adaptationEn: 'Use high blocks or a chair and softly bend the front knee.',
+      cautionEs: 'Evitá forzar isquiotibiales o bloquear la rodilla delantera.', cautionEn: 'Avoid forcing the hamstrings or locking the front knee.'
+    },
+    {
+      id: 'side-lunge', sanskrit: 'Skandasana', es: 'Estocada lateral', en: 'Side Lunge', family: 'lunge', level: 2,
+      styles: ['hatha','vinyasa'], focus: ['hips','legs','balance'], intensity: 3,
+      cueEs: 'Flexioná una rodilla y desplazá la pelvis hacia ese lado, manteniendo la otra pierna larga dentro de un rango estable.',
+      cueEn: 'Bend one knee and shift the hips toward that side while keeping the other leg long within a stable range.',
+      adaptationEs: 'Mantené la pelvis alta, apoyá manos en bloques o usá una silla.', adaptationEn: 'Keep the hips high, use blocks, or hold a chair.',
+      cautionEs: 'No profundices si la rodilla pierde alineación o aparece presión en la cadera.', cautionEn: 'Do not deepen if knee alignment is lost or hip pressure appears.'
+    },
+    {
+      id: 'standing-side-bend', sanskrit: 'Indudalasana', es: 'Media luna de pie', en: 'Standing Crescent', family: 'standing', level: 1,
+      styles: ['hatha','vinyasa'], focus: ['shoulders','back','whole'], intensity: 1,
+      cueEs: 'Alargá ambos costados y desplazá el torso lateralmente sin girar el pecho ni colapsar la cintura.',
+      cueEn: 'Lengthen both side bodies and arc laterally without rotating the chest or collapsing the waist.',
+      adaptationEs: 'Dejá una mano en la cadera o practicá sentado.', adaptationEn: 'Keep one hand on the hip or practice seated.',
+      cautionEs: 'Mantené espacio en cuello y zona lumbar.', cautionEn: 'Maintain space through the neck and lower back.'
+    },
     {
       id: 'savasana', sanskrit: 'Savasana', es: 'Relajación final', en: 'Final Relaxation', family: 'rest', level: 1,
       styles: ['hatha','vinyasa','yin','restorative'], focus: ['calm','whole'], intensity: 1,
@@ -376,6 +457,23 @@ window.YOGA_DATA = {
       adaptationEs: 'Colocá un bolster bajo rodillas, una manta o recostate de lado.', adaptationEn: 'Place a bolster under the knees, use a blanket, or rest on one side.',
       cautionEs: 'Elegí una posición respirable y cómoda.', cautionEn: 'Choose a position that feels comfortable and easy to breathe in.'
     }
+  ],
+
+  salutations: [
+    { id: 'auto', es: 'Automático según la clase', en: 'Automatic for the class', helperEs: 'Yoga 2.0 elige el saludo más coherente con el estilo, la intención y el nivel.' },
+    { id: 'none', es: 'Sin saludo', en: 'No salutation', helperEs: 'Mantiene una progresión sin secuencia solar o lunar.' },
+    { id: 'sun-a', es: 'Saludo al Sol A', en: 'Sun Salutation A', helperEs: 'Flujo clásico y simétrico para elevar temperatura y ritmo.' },
+    { id: 'sun-b', es: 'Saludo al Sol B', en: 'Sun Salutation B', helperEs: 'Integra Silla y Guerrero I con mayor demanda de fuerza.' },
+    { id: 'sun-classic', es: 'Saludo al Sol clásico de Hatha', en: 'Classical Hatha Sun Salutation', helperEs: 'Secuencia tradicional de doce posiciones, realizada a ambos lados.' },
+    { id: 'moon', es: 'Saludo a la Luna', en: 'Moon Salutation', helperEs: 'Secuencia lateral, circular y equilibrante, realizada hacia ambos lados.' }
+  ],
+  salutationVariants: [
+    { id: 'auto', es: 'Automática según el grupo', en: 'Automatic for the group' },
+    { id: 'standard', es: 'Estándar', en: 'Standard' },
+    { id: 'beginner', es: 'Nivel inicial', en: 'Beginner' },
+    { id: 'chair', es: 'Con silla', en: 'Chair-supported' },
+    { id: 'mobility', es: 'Movilidad reducida', en: 'Reduced mobility' },
+    { id: 'pregnancy', es: 'Embarazo', en: 'Pregnancy' }
   ],
   classThemes: {
     grounding: {

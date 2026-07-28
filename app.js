@@ -18,6 +18,16 @@
   let profile = loadJSON(STORAGE.profile, null);
   let savedClasses = loadJSON(STORAGE.classes, []);
   let currentDraft = loadJSON(STORAGE.draft, null);
+  function normalizeClassData(item) {
+    if (!item?.criteria) return item;
+    item.criteria.salutation ??= 'auto';
+    item.criteria.salutationVariant ??= 'auto';
+    item.criteria.salutationRounds ??= 2;
+    return item;
+  }
+  savedClasses = savedClasses.map(normalizeClassData);
+  currentDraft = normalizeClassData(currentDraft);
+
   let currentRoute = 'home';
   let classModeTimer = null;
   let classModeSeconds = 0;
@@ -273,7 +283,8 @@
   function renderCreate() {
     const defaults = currentDraft?.criteria || {
       style: profile.defaultStyle || 'hatha', duration: 60, level: 'multilevel', intention: 'grounding',
-      focus: 'whole', intensity: 'moderate', groupNeed: 'multilevel', language: profile.defaultLanguage || 'es', equipment: ['blocks']
+      focus: 'whole', intensity: 'moderate', groupNeed: 'multilevel', language: profile.defaultLanguage || 'es', equipment: ['blocks'],
+      salutation: 'auto', salutationVariant: 'auto', salutationRounds: 2
     };
 
     main.innerHTML = `
@@ -336,6 +347,29 @@
               </select>
             </label>
           </div>
+          <div class="salutation-config">
+            <div class="section-heading compact-heading">
+              <div><span class="field-label">Secuencia solar o lunar</span><small>Se incorpora como un bloque ordenado y protegido.</small></div>
+            </div>
+            <div class="form-grid three">
+              <label>Saludo
+                <select name="salutation" id="salutationSelect">
+                  ${DATA.salutations.map(item => `<option value="${item.id}" ${(defaults.salutation || 'auto') === item.id ? 'selected' : ''}>${escapeHTML(item.es)}</option>`).join('')}
+                </select>
+              </label>
+              <label>Variante
+                <select name="salutationVariant" id="salutationVariantSelect">
+                  ${DATA.salutationVariants.map(item => `<option value="${item.id}" ${(defaults.salutationVariant || 'auto') === item.id ? 'selected' : ''}>${escapeHTML(item.es)}</option>`).join('')}
+                </select>
+              </label>
+              <label>Vueltas
+                <select name="salutationRounds" id="salutationRoundsSelect">
+                  ${[1,2,3,4,5,6].map(value => `<option value="${value}" ${Number(defaults.salutationRounds || 2) === value ? 'selected' : ''}>${value} ${value === 1 ? 'vuelta' : 'vueltas'}</option>`).join('')}
+                </select>
+              </label>
+            </div>
+            <p class="field-help" id="salutationHelp">Yoga 2.0 respetará el orden, los lados y las transiciones del saludo seleccionado.</p>
+          </div>
         </fieldset>
 
         <fieldset class="form-card">
@@ -361,6 +395,27 @@
       </form>
     `;
 
+    const salutationSelect = document.getElementById('salutationSelect');
+    const salutationVariantSelect = document.getElementById('salutationVariantSelect');
+    const salutationRoundsSelect = document.getElementById('salutationRoundsSelect');
+    const salutationHelp = document.getElementById('salutationHelp');
+    const updateSalutationHelp = () => {
+      const style = document.querySelector('input[name="style"]:checked')?.value;
+      const dynamicStyle = !['yin','restorative'].includes(style);
+      salutationSelect.disabled = !dynamicStyle;
+      salutationVariantSelect.disabled = !dynamicStyle;
+      salutationRoundsSelect.disabled = !dynamicStyle;
+      if (!dynamicStyle) {
+        salutationHelp.textContent = 'En Yin y Restaurativo se omiten los saludos dinámicos para conservar la lógica del estilo.';
+        return;
+      }
+      const selected = DATA.salutations.find(item => item.id === salutationSelect.value);
+      salutationHelp.textContent = selected?.helperEs || 'Yoga 2.0 respetará el orden, los lados y las transiciones del saludo seleccionado.';
+    };
+    salutationSelect.addEventListener('change', updateSalutationHelp);
+    document.querySelectorAll('input[name="style"]').forEach(input => input.addEventListener('change', updateSalutationHelp));
+    updateSalutationHelp();
+
     document.getElementById('generatorForm').addEventListener('submit', event => {
       event.preventDefault();
       const form = new FormData(event.currentTarget);
@@ -373,7 +428,10 @@
         intensity: form.get('intensity'),
         groupNeed: form.get('groupNeed'),
         language: form.get('language'),
-        equipment: form.getAll('equipment')
+        equipment: form.getAll('equipment'),
+        salutation: form.get('salutation'),
+        salutationVariant: form.get('salutationVariant'),
+        salutationRounds: Number(form.get('salutationRounds'))
       };
       currentDraft = generateClass(criteria);
       saveJSON(STORAGE.draft, currentDraft);
@@ -429,26 +487,52 @@
   }
 
   function buildHatha(c) {
-    const durations = allocateMinutes(c.duration, [10, 17, 30, 18, 15, 10]);
+    const salutation = resolveSalutation(c);
+    if (!salutation) {
+      const durations = allocateMinutes(c.duration, [10, 17, 30, 18, 15, 10]);
+      return [
+        makeBlock('arrival', 'Llegada e intención', durations[0], choose(c, ['seated','rest'], 1, ['easy-seat'])),
+        makeBlock('warm', 'Movilidad y calentamiento', durations[1], choose(c, ['warmup','lunge','inversion'], 3, ['cat-cow','thread-needle','low-lunge'])),
+        makeBlock('standing', 'Secuencia de pie', durations[2], choose(c, ['standing','lunge','balance'], 5, ['mountain','warrior1','warrior2','triangle','tree'])),
+        makeBlock('peak', 'Foco principal', durations[3], choosePeak(c, 2)),
+        makeBlock('floor', 'Integración en el suelo', durations[4], choose(c, ['hips','seated','twist','supine'], 3, ['figure-four','seated-fold','supine-twist'])),
+        makeBlock('rest', 'Relajación y cierre', durations[5], choose(c, ['rest'], 1, ['savasana']))
+      ];
+    }
+    const durations = allocateMinutes(c.duration, [10, 14, 22, 20, 14, 10, 10]);
     return [
       makeBlock('arrival', 'Llegada e intención', durations[0], choose(c, ['seated','rest'], 1, ['easy-seat'])),
-      makeBlock('warm', 'Movilidad y calentamiento', durations[1], choose(c, ['warmup','lunge','inversion'], 3, ['cat-cow','thread-needle','low-lunge'])),
-      makeBlock('standing', 'Secuencia de pie', durations[2], choose(c, ['standing','lunge','balance'], 5, ['mountain','warrior1','warrior2','triangle','tree'])),
-      makeBlock('peak', 'Foco principal', durations[3], choosePeak(c, 2)),
-      makeBlock('floor', 'Integración en el suelo', durations[4], choose(c, ['hips','seated','twist','supine'], 3, ['figure-four','seated-fold','supine-twist'])),
-      makeBlock('rest', 'Relajación y cierre', durations[5], choose(c, ['rest'], 1, ['savasana']))
+      makeBlock('warm', 'Movilidad y preparación', durations[1], choose(c, ['warmup','lunge'], 3, ['cat-cow','thread-needle','low-lunge'])),
+      makeSalutationBlock(c, durations[2], salutation),
+      makeBlock('standing', 'Secuencia de pie', durations[3], choose(c, ['standing','lunge','balance'], 4, ['warrior2','side-angle','triangle','tree'])),
+      makeBlock('peak', 'Foco principal', durations[4], choosePeak(c, 2)),
+      makeBlock('floor', 'Integración en el suelo', durations[5], choose(c, ['hips','seated','twist','supine'], 2, ['figure-four','supine-twist'])),
+      makeBlock('rest', 'Relajación y cierre', durations[6], choose(c, ['rest'], 1, ['savasana']))
     ];
   }
 
   function buildVinyasa(c) {
-    const durations = allocateMinutes(c.duration, [8, 15, 38, 17, 12, 10]);
+    const salutation = resolveSalutation(c);
+    if (!salutation) {
+      const durations = allocateMinutes(c.duration, [8, 15, 38, 17, 12, 10]);
+      return [
+        makeBlock('arrival', 'Aterrizaje y respiración', durations[0], choose(c, ['seated','rest'], 1, ['easy-seat'])),
+        makeBlock('warm', 'Preparación progresiva', durations[1], choose(c, ['warmup','lunge','inversion'], 4, ['cat-cow','down-dog','low-lunge','half-lift'])),
+        makeBlock('flow', 'Flujo principal', durations[2], choose(c, ['standing','lunge','strength','balance'], 7, ['mountain','chair','high-lunge','warrior2','side-angle','plank','down-dog'])),
+        makeBlock('peak', 'Exploración pico', durations[3], choosePeak(c, 2)),
+        makeBlock('floor', 'Descenso e integración', durations[4], choose(c, ['hips','seated','twist','supine'], 3, ['figure-four','happy-baby','supine-twist'])),
+        makeBlock('rest', 'Savasana y cierre', durations[5], choose(c, ['rest'], 1, ['savasana']))
+      ];
+    }
+    const durations = allocateMinutes(c.duration, [8, 12, 25, 25, 12, 8, 10]);
     return [
       makeBlock('arrival', 'Aterrizaje y respiración', durations[0], choose(c, ['seated','rest'], 1, ['easy-seat'])),
-      makeBlock('warm', 'Preparación progresiva', durations[1], choose(c, ['warmup','lunge','inversion'], 4, ['cat-cow','down-dog','low-lunge','half-lift'])),
-      makeBlock('flow', 'Flujo principal', durations[2], choose(c, ['standing','lunge','strength','balance'], 7, ['mountain','chair','high-lunge','warrior2','side-angle','plank','down-dog'])),
-      makeBlock('peak', 'Exploración pico', durations[3], choosePeak(c, 2)),
-      makeBlock('floor', 'Descenso e integración', durations[4], choose(c, ['hips','seated','twist','supine'], 3, ['figure-four','happy-baby','supine-twist'])),
-      makeBlock('rest', 'Savasana y cierre', durations[5], choose(c, ['rest'], 1, ['savasana']))
+      makeBlock('warm', 'Preparación progresiva', durations[1], choose(c, ['warmup','lunge'], 3, ['cat-cow','low-lunge','down-dog'])),
+      makeSalutationBlock(c, durations[2], salutation),
+      makeBlock('flow', 'Flujo principal', durations[3], choose(c, ['standing','lunge','strength','balance'], 5, ['high-lunge','warrior2','side-angle','plank','down-dog'])),
+      makeBlock('peak', 'Exploración pico', durations[4], choosePeak(c, 2)),
+      makeBlock('floor', 'Descenso e integración', durations[5], choose(c, ['hips','seated','twist','supine'], 2, ['figure-four','supine-twist'])),
+      makeBlock('rest', 'Savasana y cierre', durations[6], choose(c, ['rest'], 1, ['savasana']))
     ];
   }
 
@@ -474,6 +558,164 @@
       makeBlock('integration', 'Integración suave', durations[4], choose(c, ['rest','twist'], 2, ['reclined-butterfly','supine-twist'])),
       makeBlock('rest', 'Savasana y cierre', durations[5], choose(c, ['rest'], 1, ['savasana']))
     ];
+  }
+
+  function resolveSalutation(criteria) {
+    if (criteria.style === 'yin' || criteria.style === 'restorative') return null;
+    let id = criteria.salutation || 'auto';
+    if (id === 'none') return null;
+    if (id === 'auto') {
+      if (criteria.style === 'vinyasa') id = criteria.level === 'beginner' || criteria.intensity === 'gentle' ? 'sun-a' : 'sun-b';
+      else id = ['calm','release'].includes(criteria.intention) ? 'moon' : 'sun-classic';
+    }
+    let variant = criteria.salutationVariant || 'auto';
+    if (variant === 'auto') {
+      const needMap = { pregnancy: 'pregnancy', chair: 'chair', senior: 'mobility' };
+      variant = needMap[criteria.groupNeed] || (criteria.level === 'beginner' || ['wrists','knees','lowback'].includes(criteria.groupNeed) ? 'beginner' : 'standard');
+    }
+    return { id, variant, rounds: Math.max(1, Math.min(6, Number(criteria.salutationRounds || 2))) };
+  }
+
+  function makeSalutationBlock(criteria, minutes, selection) {
+    const sequence = salutationTemplate(selection.id, selection.variant);
+    const secondsPerStep = (minutes * 60) / Math.max(1, sequence.steps.length * selection.rounds);
+    const label = DATA.salutations.find(item => item.id === selection.id);
+    const variantLabel = DATA.salutationVariants.find(item => item.id === selection.variant);
+    return {
+      id: uid('salutation'),
+      type: 'salutation',
+      title: label?.es || 'Secuencia guiada',
+      minutes,
+      sequence: {
+        id: selection.id,
+        nameEs: label?.es || 'Secuencia guiada',
+        nameEn: label?.en || 'Guided sequence',
+        variant: selection.variant,
+        variantEs: variantLabel?.es || selection.variant,
+        variantEn: variantLabel?.en || selection.variant,
+        rounds: selection.rounds,
+        sidePatternEs: sequence.sidePatternEs,
+        sidePatternEn: sequence.sidePatternEn,
+        guidanceEs: sequence.guidanceEs,
+        guidanceEn: sequence.guidanceEn
+      },
+      poses: sequence.steps.map((step, index) => ({
+        poseId: step.poseId,
+        minutes: secondsPerStep / 60,
+        note: '',
+        sequenceStep: true,
+        side: step.side || '',
+        stepNameEs: step.nameEs || '',
+        stepNameEn: step.nameEn || '',
+        stepCueEs: step.cueEs || '',
+        stepCueEn: step.cueEn || '',
+        transitionEs: step.transitionEs || '',
+        transitionEn: step.transitionEn || ''
+      }))
+    };
+  }
+
+  function allocateSeconds(totalSeconds, count) {
+    const base = Math.floor(totalSeconds / count);
+    let remainder = totalSeconds - base * count;
+    return Array.from({ length: count }, () => base + (remainder-- > 0 ? 1 : 0));
+  }
+
+  function salutationTemplate(id, variant) {
+    const S = (poseId, side = '', cueEs = '', cueEn = '', nameEs = '', nameEn = '', transitionEs = '', transitionEn = '') => ({ poseId, side, cueEs, cueEn, nameEs, nameEn, transitionEs, transitionEn });
+    const bases = {
+      'sun-a': {
+        sidePatternEs: 'Secuencia simétrica. Cada vuelta comienza y termina en el frente del mat.',
+        sidePatternEn: 'Symmetrical sequence. Each round begins and ends at the front of the mat.',
+        guidanceEs: 'Vinculá cada transición con la respiración. En Perro boca abajo podés sostener entre tres y cinco respiraciones.',
+        guidanceEn: 'Link each transition to the breath. Downward Dog may be held for three to five breaths.',
+        steps: [S('prayer'),S('raised-arms'),S('forward-fold'),S('half-lift'),S('plank'),S('chaturanga'),S('up-dog'),S('down-dog'),S('half-lift','','','', '', '', 'Caminá o avanzá al frente y alargá la columna.','Walk or step forward and lengthen the spine.'),S('forward-fold'),S('raised-arms'),S('prayer')]
+      },
+      'sun-b': {
+        sidePatternEs: 'Una vuelta completa incluye Guerrero I a derecha e izquierda antes de regresar al frente.',
+        sidePatternEn: 'One full round includes Warrior I on the right and left before returning to the front.',
+        guidanceEs: 'Mantené el ritmo respiratorio estable. Evitá acelerar las transiciones de fuerza si se pierde alineación.',
+        guidanceEn: 'Keep the breath steady. Avoid speeding through strength transitions when alignment is lost.',
+        steps: [S('chair'),S('forward-fold'),S('half-lift'),S('plank'),S('chaturanga'),S('up-dog'),S('down-dog'),S('warrior1','derecha','','','','','Avanzá el pie derecho y girá el talón posterior.','Step the right foot forward and turn the back heel.'),S('plank'),S('chaturanga'),S('up-dog'),S('down-dog'),S('warrior1','izquierda','','','','','Avanzá el pie izquierdo y girá el talón posterior.','Step the left foot forward and turn the back heel.'),S('plank'),S('chaturanga'),S('up-dog'),S('down-dog'),S('half-lift','','','','','','Caminá o avanzá al frente.','Walk or step to the front.'),S('forward-fold'),S('chair'),S('mountain')]
+      },
+      'sun-classic': {
+        sidePatternEs: 'Una vuelta completa contiene dos medias vueltas: primero pierna derecha atrás y luego pierna izquierda atrás.',
+        sidePatternEn: 'One full round contains two half-rounds: right leg back first, then left leg back.',
+        guidanceEs: 'Recorré las doce posiciones con continuidad y repetí del lado opuesto. La transición puede ser lenta y respirada.',
+        guidanceEn: 'Move through the twelve positions continuously and repeat on the opposite side. The transition may be slow and breath-led.',
+        steps: [
+          S('prayer'),S('raised-arms'),S('forward-fold'),S('low-lunge','derecha atrás'),S('plank'),S('knees-chest-chin'),S('cobra'),S('down-dog'),S('low-lunge','derecha adelante'),S('forward-fold'),S('raised-arms'),S('prayer'),
+          S('prayer','','','','Inicio de la segunda media vuelta','Start of the second half-round'),S('raised-arms'),S('forward-fold'),S('low-lunge','izquierda atrás'),S('plank'),S('knees-chest-chin'),S('cobra'),S('down-dog'),S('low-lunge','izquierda adelante'),S('forward-fold'),S('raised-arms'),S('prayer')
+        ]
+      },
+      'moon': {
+        sidePatternEs: 'Una vuelta completa viaja hacia la derecha, cruza por el centro y regresa hacia la izquierda.',
+        sidePatternEn: 'One full round travels to the right, crosses through center, and returns to the left.',
+        guidanceEs: 'Buscá un ritmo continuo y amplio. Priorizá estabilidad lateral, respiración tranquila y transiciones sin apuro.',
+        guidanceEn: 'Seek a spacious, continuous rhythm. Prioritize lateral stability, calm breathing, and unhurried transitions.',
+        steps: [S('prayer'),S('raised-arms'),S('standing-side-bend','derecha'),S('star'),S('goddess'),S('star'),S('triangle','derecha'),S('pyramid','derecha'),S('low-lunge','derecha'),S('side-lunge','derecha'),S('goddess','centro'),S('side-lunge','izquierda'),S('low-lunge','izquierda'),S('pyramid','izquierda'),S('triangle','izquierda'),S('star'),S('goddess'),S('star'),S('standing-side-bend','izquierda'),S('raised-arms'),S('prayer')]
+      }
+    };
+    const base = structuredCloneSafe(bases[id] || bases['sun-a']);
+    if (variant === 'standard') return base;
+
+    if (variant === 'beginner') {
+      base.guidanceEs += ' Variante inicial: avanzá caminando, usá bloques y apoyá rodillas antes de las transiciones de fuerza.';
+      base.guidanceEn += ' Beginner variation: step rather than jump, use blocks, and lower the knees before strength transitions.';
+      base.steps = base.steps.map(step => {
+        if (step.poseId === 'chaturanga') return S('knees-chest-chin', step.side, 'Apoyá rodillas y descendé con control.', 'Lower the knees and descend with control.');
+        if (step.poseId === 'up-dog') return S('cobra', step.side, 'Elegí una cobra baja y mantené la pelvis apoyada.', 'Choose low cobra and keep the pelvis grounded.');
+        if (step.poseId === 'side-lunge') return { ...step, cueEs: 'Mantené la pelvis alta y usá bloques.', cueEn: 'Keep the hips high and use blocks.' };
+        return { ...step, transitionEs: step.transitionEs || 'Movete sin saltos y ajustá la base antes de continuar.', transitionEn: step.transitionEn || 'Move without jumping and reset the base before continuing.' };
+      });
+      return base;
+    }
+
+    const chairSun = [
+      S('prayer','','Sentate o permanecé de pie detrás de la silla.','Sit or stand behind the chair.','Saludo con silla','Chair prayer'),
+      S('raised-arms','','Elevá los brazos dentro de un rango cómodo.','Lift the arms within a comfortable range.','Brazos elevados con apoyo','Supported upward salute'),
+      S('forward-fold','','Incliná el torso hacia los muslos o hacia el respaldo.','Fold the torso toward the thighs or chair back.','Flexión con silla','Chair-supported fold'),
+      S('half-lift','','Alargá la espalda con manos en muslos o respaldo.','Lengthen the spine with hands on thighs or chair back.','Media flexión con silla','Chair half lift'),
+      S('plank','','Caminá hacia atrás y apoyá manos en el respaldo.','Walk back with hands on the chair back.','Plancha inclinada','Inclined plank'),
+      S('cobra','','Desde la plancha inclinada, elevá suavemente el pecho.','From inclined plank, gently lift the chest.','Extensión de pie','Standing backbend'),
+      S('down-dog','','Llevá la pelvis atrás con manos en la silla.','Send the hips back with hands on the chair.','Perro con silla','Chair-supported Down Dog'),
+      S('half-lift','','Caminá al frente y alargá la columna.','Walk forward and lengthen the spine.','Media flexión con silla','Chair half lift'),
+      S('raised-arms'),S('prayer')
+    ];
+    const chairMoon = [S('prayer'),S('raised-arms'),S('standing-side-bend','derecha','','','Inclinación lateral sentada o con silla','Seated or supported side bend'),S('star','','Abrí los pies detrás de la silla.','Step wide behind the chair.','Estrella con silla','Chair-supported star'),S('goddess','','Flexioná poco las rodillas con manos en el respaldo.','Bend the knees slightly with hands on the chair.','Diosa con silla','Chair-supported Goddess'),S('triangle','derecha','','','Triángulo con silla','Chair-supported Triangle'),S('low-lunge','derecha','','','Estocada corta con silla','Short chair-supported lunge'),S('goddess','centro','','','Diosa con silla','Chair-supported Goddess'),S('low-lunge','izquierda','','','Estocada corta con silla','Short chair-supported lunge'),S('triangle','izquierda','','','Triángulo con silla','Chair-supported Triangle'),S('star'),S('standing-side-bend','izquierda','','','Inclinación lateral sentada o con silla','Seated or supported side bend'),S('prayer')];
+
+    if (variant === 'chair') {
+      return {
+        ...base,
+        sidePatternEs: id === 'moon' ? 'Realizá la secuencia a ambos lados utilizando la silla como apoyo estable.' : 'La secuencia completa se realiza sentada o con apoyo continuo en una silla firme.',
+        sidePatternEn: id === 'moon' ? 'Practice both sides using the chair as steady support.' : 'The complete sequence is practiced seated or with continuous support from a stable chair.',
+        guidanceEs: 'Usá una silla sin ruedas sobre una superficie estable. Evitá colgar el peso del respaldo.',
+        guidanceEn: 'Use a wheel-free chair on a stable surface. Avoid hanging body weight from the chair back.',
+        steps: id === 'moon' ? chairMoon : (id === 'sun-b' ? [...chairSun.slice(0,4),S('chair','','Llevá la pelvis hacia atrás sin soltar la silla.','Send the hips back while keeping chair support.','Silla con apoyo','Supported Chair'),S('warrior1','derecha','','','Guerrero I con silla','Chair-supported Warrior I'),S('down-dog','','','','Perro con silla','Chair-supported Down Dog'),S('warrior1','izquierda','','','Guerrero I con silla','Chair-supported Warrior I'),...chairSun.slice(7)] : chairSun)
+      };
+    }
+
+    if (variant === 'mobility') {
+      const result = salutationTemplate(id, 'chair');
+      result.guidanceEs = 'Variante de movilidad reducida: permití pausas, mantené apoyos cercanos y priorizá cambios de dirección previsibles.';
+      result.guidanceEn = 'Reduced-mobility variation: allow pauses, keep support nearby, and prioritize predictable direction changes.';
+      result.steps = result.steps.map(step => ({ ...step, nameEs: step.nameEs || `Versión asistida · ${DATA.poses.find(p => p.id === step.poseId)?.es || ''}`, nameEn: step.nameEn || `Assisted · ${DATA.poses.find(p => p.id === step.poseId)?.en || ''}` }));
+      return result;
+    }
+
+    if (variant === 'pregnancy') {
+      const pregnancySun = [S('prayer','','Separá los pies y encontrá una base cómoda.','Take a comfortable wide stance.','Saludo en base amplia','Wide-stance prayer'),S('raised-arms'),S('standing-side-bend','derecha'),S('half-lift','','Apoyá manos en una silla y mantené espacio para el abdomen.','Place hands on a chair and leave space for the abdomen.','Media flexión amplia con silla','Wide chair-supported half fold'),S('low-lunge','derecha','','','Estocada corta con silla','Short chair-supported lunge'),S('mountain','','Regresá al centro sin apuro.','Return to center without rushing.','Montaña amplia','Wide Mountain'),S('low-lunge','izquierda','','','Estocada corta con silla','Short chair-supported lunge'),S('goddess','','Elegí una profundidad suave.','Choose a gentle depth.','Diosa suave','Gentle Goddess'),S('standing-side-bend','izquierda'),S('raised-arms'),S('prayer')];
+      const pregnancyMoon = [S('prayer','','Separá los pies y dejá espacio para el abdomen.','Take a wide stance and leave space for the abdomen.','Saludo en base amplia','Wide-stance prayer'),S('standing-side-bend','derecha'),S('star'),S('goddess','','Mantené una profundidad cómoda.','Keep a comfortable depth.'),S('triangle','derecha','','','Triángulo con apoyo','Supported Triangle'),S('low-lunge','derecha','','','Estocada corta con silla','Short chair-supported lunge'),S('goddess','centro'),S('low-lunge','izquierda','','','Estocada corta con silla','Short chair-supported lunge'),S('triangle','izquierda','','','Triángulo con apoyo','Supported Triangle'),S('star'),S('standing-side-bend','izquierda'),S('prayer')];
+      return {
+        ...base,
+        sidePatternEs: 'Secuencia adaptada, simétrica y sin transiciones en prono. Realizá ambos lados con apoyo.',
+        sidePatternEn: 'Adapted symmetrical sequence without prone transitions. Practice both sides with support.',
+        guidanceEs: 'Embarazo: usar únicamente con autorización profesional y adaptación individual. Evitá compresión abdominal, apneas, sobrecalentamiento y rangos incómodos.',
+        guidanceEn: 'Pregnancy: use only with professional clearance and individual adaptation. Avoid abdominal compression, breath retention, overheating, and uncomfortable ranges.',
+        steps: id === 'moon' ? pregnancyMoon : pregnancySun
+      };
+    }
+    return base;
   }
 
   function allocateMinutes(total, percentages) {
@@ -553,6 +795,14 @@
     };
   }
 
+  function formatPracticeTime(minutes) {
+    const seconds = Math.max(1, Math.round(Number(minutes || 0) * 60));
+    if (seconds < 60) return `${seconds} seg`;
+    const mins = Math.floor(seconds / 60);
+    const remainder = seconds % 60;
+    return remainder ? `${mins} min ${remainder} seg` : `${mins} min`;
+  }
+
   function renderClassEditor(classData, fromSaved) {
     currentDraft = structuredCloneSafe(classData);
     saveJSON(STORAGE.draft, currentDraft);
@@ -577,6 +827,7 @@
             <span>◷ ${currentDraft.criteria.duration} min</span>
             <span>◉ ${escapeHTML(levelLabel(currentDraft.criteria.level))}</span>
             <span>◇ ${escapeHTML(intensityLabel(currentDraft.criteria.intensity))}</span>
+            ${currentDraft.blocks.some(block => block.sequence) ? `<span>☼ ${escapeHTML(currentDraft.blocks.find(block => block.sequence).sequence.nameEs)}</span>` : ''}
           </div>
         </header>
 
@@ -615,43 +866,64 @@
   }
 
   function renderBlock(block, blockIndex, lang) {
+    const sequence = block.sequence;
     return `
-      <section class="sequence-block" data-block-index="${blockIndex}">
+      <section class="sequence-block ${sequence ? 'is-salutation-block' : ''}" data-block-index="${blockIndex}">
         <div class="sequence-block-head">
           <div>
             <span class="block-number">${String(blockIndex + 1).padStart(2, '0')}</span>
-            <div><h3>${escapeHTML(block.title)}</h3><p>${block.minutes} min</p></div>
+            <div><h3>${escapeHTML(block.title)}</h3><p>${block.minutes} min${sequence ? ` · ${sequence.rounds} ${sequence.rounds === 1 ? 'vuelta' : 'vueltas'}` : ''}</p></div>
           </div>
-          <button class="text-button no-print" data-action="regenerate-block" data-block-index="${blockIndex}" type="button">Regenerar bloque</button>
+          <button class="text-button no-print" data-action="${sequence ? 'edit-salutation' : 'regenerate-block'}" data-block-index="${blockIndex}" type="button">${sequence ? 'Cambiar saludo' : 'Regenerar bloque'}</button>
         </div>
+        ${sequence ? `
+          <div class="salutation-summary">
+            <div><span class="sequence-badge">Secuencia protegida</span><strong>${escapeHTML(lang === 'en' ? sequence.variantEn : sequence.variantEs)}</strong></div>
+            <p>${escapeHTML(lang === 'en' ? sequence.sidePatternEn : sequence.sidePatternEs)}</p>
+            <p><strong>Guía:</strong> ${escapeHTML(lang === 'en' ? sequence.guidanceEn : sequence.guidanceEs)}</p>
+          </div>` : ''}
         <div class="pose-list">
-          ${block.poses.map((item, poseIndex) => renderPoseRow(item, blockIndex, poseIndex, lang)).join('')}
+          ${block.poses.map((item, poseIndex) => renderPoseRow(item, blockIndex, poseIndex, lang, Boolean(sequence))).join('')}
         </div>
       </section>
     `;
   }
 
-  function renderPoseRow(item, blockIndex, poseIndex, lang) {
+  function localizedSide(side, lang) {
+    if (!side || lang !== 'en') return side;
+    const map = {
+      'derecha': 'right', 'izquierda': 'left', 'centro': 'center',
+      'derecha atrás': 'right leg back', 'izquierda atrás': 'left leg back',
+      'derecha adelante': 'right leg forward', 'izquierda adelante': 'left leg forward'
+    };
+    return map[side] || side;
+  }
+
+  function renderPoseRow(item, blockIndex, poseIndex, lang, locked = false) {
     const pose = DATA.poses.find(entry => entry.id === item.poseId);
     if (!pose) return '';
-    const name = lang === 'en' ? pose.en : pose.es;
-    const cue = lang === 'en' ? pose.cueEn : pose.cueEs;
+    const name = (lang === 'en' ? item.stepNameEn : item.stepNameEs) || (lang === 'en' ? pose.en : pose.es);
+    const cue = (lang === 'en' ? item.stepCueEn : item.stepCueEs) || (lang === 'en' ? pose.cueEn : pose.cueEs);
+    const transition = lang === 'en' ? item.transitionEn : item.transitionEs;
     const adaptation = lang === 'en' ? pose.adaptationEn : pose.adaptationEs;
     const caution = lang === 'en' ? pose.cautionEn : pose.cautionEs;
     const groupNote = getGroupAdaptation(pose, currentDraft.criteria.groupNeed, lang);
+    const displaySide = localizedSide(item.side, lang);
+    const sideText = displaySide ? `<span class="side-tag">${escapeHTML(displaySide)}</span>` : '';
 
     return `
-      <article class="pose-row" data-block-index="${blockIndex}" data-pose-index="${poseIndex}">
-        <div class="pose-time"><strong>${item.minutes}</strong><span>min</span></div>
+      <article class="pose-row ${locked ? 'is-locked-step' : ''}" data-block-index="${blockIndex}" data-pose-index="${poseIndex}">
+        <div class="pose-time"><strong>${escapeHTML(formatPracticeTime(item.minutes))}</strong><span>${item.sequenceStep ? 'por paso' : 'sugerido'}</span></div>
         <div class="pose-content">
           <div class="pose-title-line">
             <div>
-              <h4>${escapeHTML(name)}</h4>
+              <h4>${escapeHTML(name)} ${sideText}</h4>
               <p class="sanskrit">${escapeHTML(pose.sanskrit)}</p>
             </div>
             <span class="family-tag">${escapeHTML(familyLabel(pose.family))}</span>
           </div>
           <p class="cue-text">${escapeHTML(cue)}</p>
+          ${transition ? `<p class="transition-note"><strong>Transición:</strong> ${escapeHTML(transition)}</p>` : ''}
           <details>
             <summary>Adaptación y cuidados</summary>
             <p><strong>Opción:</strong> ${escapeHTML(adaptation)}</p>
@@ -661,11 +933,12 @@
           ${item.note ? `<p class="personal-note"><strong>Nota docente:</strong> ${escapeHTML(item.note)}</p>` : ''}
         </div>
         <div class="pose-actions no-print" aria-label="Acciones de la postura">
-          <button type="button" data-action="move-up" title="Mover arriba" aria-label="Mover postura arriba">↑</button>
-          <button type="button" data-action="move-down" title="Mover abajo" aria-label="Mover postura abajo">↓</button>
-          <button type="button" data-action="replace" title="Reemplazar" aria-label="Reemplazar postura">↻</button>
-          <button type="button" data-action="note" title="Agregar nota" aria-label="Agregar nota docente">✎</button>
-          <button type="button" data-action="remove" title="Quitar" aria-label="Quitar postura">×</button>
+          ${locked ? `<span class="locked-step-label" title="El orden pertenece a una secuencia completa">🔒</span><button type="button" data-action="note" title="Agregar nota" aria-label="Agregar nota docente">✎</button>` : `
+            <button type="button" data-action="move-up" title="Mover arriba" aria-label="Mover postura arriba">↑</button>
+            <button type="button" data-action="move-down" title="Mover abajo" aria-label="Mover postura abajo">↓</button>
+            <button type="button" data-action="replace" title="Reemplazar" aria-label="Reemplazar postura">↻</button>
+            <button type="button" data-action="note" title="Agregar nota" aria-label="Agregar nota docente">✎</button>
+            <button type="button" data-action="remove" title="Quitar" aria-label="Quitar postura">×</button>`}
         </div>
       </article>
     `;
@@ -675,7 +948,7 @@
     const map = {
       seated: 'Sentada', standing: 'De pie', rest: 'Descanso', warmup: 'Movilidad', inversion: 'Inversión',
       lunge: 'Estocada', balance: 'Equilibrio', strength: 'Fuerza', backbend: 'Extensión', hips: 'Caderas',
-      twist: 'Torsión', supine: 'Acostada', yin: 'Yin'
+      twist: 'Torsión', supine: 'Acostada', yin: 'Yin', sequence: 'Secuencia'
     };
     return map[family] || family;
   }
@@ -742,6 +1015,7 @@
       if (action === 'replace') openReplaceModal(blockIndex, poseIndex, fromSaved);
       if (action === 'note') openNoteModal(blockIndex, poseIndex, fromSaved);
       if (action === 'regenerate-block') regenerateBlock(blockIndex, fromSaved);
+      if (action === 'edit-salutation') openSalutationEditor(blockIndex, fromSaved);
     });
   }
 
@@ -751,6 +1025,7 @@
   }
 
   function movePose(blockIndex, poseIndex, direction, fromSaved) {
+    if (currentDraft.blocks[blockIndex].sequence) return;
     const list = currentDraft.blocks[blockIndex].poses;
     const target = poseIndex + direction;
     if (target < 0 || target >= list.length) return;
@@ -760,6 +1035,7 @@
   }
 
   function removePose(blockIndex, poseIndex, fromSaved) {
+    if (currentDraft.blocks[blockIndex].sequence) return;
     const block = currentDraft.blocks[blockIndex];
     if (block.poses.length <= 1) {
       showToast('Cada bloque necesita al menos una práctica.');
@@ -832,7 +1108,7 @@
     const pose = DATA.poses.find(p => p.id === item.poseId);
     openModal(`
       <div class="modal-card">
-        <div class="modal-head"><div><p class="eyebrow">NOTA DOCENTE</p><h3>${escapeHTML(pose.es)}</h3></div><button class="icon-button" data-close-modal type="button">×</button></div>
+        <div class="modal-head"><div><p class="eyebrow">NOTA DOCENTE</p><h3>${escapeHTML(item.stepNameEs || pose.es)}</h3></div><button class="icon-button" data-close-modal type="button">×</button></div>
         <label>Tu recordatorio
           <textarea id="poseNoteInput" rows="5" placeholder="Ej. Ofrecer pared a Ana; sostener dos respiraciones menos.">${escapeHTML(item.note || '')}</textarea>
         </label>
@@ -848,8 +1124,51 @@
     });
   }
 
+  function openSalutationEditor(blockIndex, fromSaved) {
+    const block = currentDraft.blocks[blockIndex];
+    const sequence = block.sequence;
+    openModal(`
+      <div class="modal-card">
+        <div class="modal-head"><div><p class="eyebrow">SECUENCIA COMPLETA</p><h3>Cambiar saludo</h3></div><button class="icon-button" data-close-modal type="button">×</button></div>
+        <label>Saludo
+          <select id="editSalutationId">
+            ${DATA.salutations.filter(item => !['auto','none'].includes(item.id)).map(item => `<option value="${item.id}" ${sequence.id === item.id ? 'selected' : ''}>${escapeHTML(item.es)}</option>`).join('')}
+          </select>
+        </label>
+        <label>Variante
+          <select id="editSalutationVariant">
+            ${DATA.salutationVariants.filter(item => item.id !== 'auto').map(item => `<option value="${item.id}" ${sequence.variant === item.id ? 'selected' : ''}>${escapeHTML(item.es)}</option>`).join('')}
+          </select>
+        </label>
+        <label>Vueltas
+          <select id="editSalutationRounds">
+            ${[1,2,3,4,5,6].map(value => `<option value="${value}" ${sequence.rounds === value ? 'selected' : ''}>${value}</option>`).join('')}
+          </select>
+        </label>
+        <div class="safety-note"><strong>Bloque protegido</strong><p>Al guardar se reemplaza la secuencia completa. Sus pasos conservan el orden y los lados correspondientes.</p></div>
+        <button class="primary-button" id="saveSalutationEdit" type="button">Aplicar secuencia</button>
+      </div>
+    `);
+    document.getElementById('saveSalutationEdit').addEventListener('click', () => {
+      const selection = {
+        id: document.getElementById('editSalutationId').value,
+        variant: document.getElementById('editSalutationVariant').value,
+        rounds: Number(document.getElementById('editSalutationRounds').value)
+      };
+      currentDraft.criteria.salutation = selection.id;
+      currentDraft.criteria.salutationVariant = selection.variant;
+      currentDraft.criteria.salutationRounds = selection.rounds;
+      currentDraft.blocks[blockIndex] = makeSalutationBlock(currentDraft.criteria, block.minutes, selection);
+      persistDraft();
+      closeModal();
+      renderClassEditor(currentDraft, fromSaved);
+      showToast('Secuencia completa actualizada.');
+    });
+  }
+
   function regenerateBlock(blockIndex, fromSaved) {
     const old = currentDraft.blocks[blockIndex];
+    if (old.sequence) { openSalutationEditor(blockIndex, fromSaved); return; }
     const c = currentDraft.criteria;
     const familyMap = {
       arrival: ['seated','rest'], warm: ['warmup','lunge','inversion'], standing: ['standing','lunge','balance'],
@@ -888,6 +1207,12 @@
         <p class="eyebrow">BIBLIOTECA PROFESIONAL</p>
         <h2>Asanas y recursos</h2>
         <p>Consultá indicaciones, variantes generales y cuidados. Usá esta biblioteca como apoyo a tu formación, no como sustituto de valoración individual.</p>
+      </section>
+      <section class="section-block">
+        <div class="section-heading"><div><p class="eyebrow">SECUENCIAS COMPLETAS</p><h3>Saludos solares y lunares</h3></div></div>
+        <div class="salutation-library-grid">
+          ${DATA.salutations.filter(item => !['auto','none'].includes(item.id)).map(item => salutationLibraryCard(item)).join('')}
+        </div>
       </section>
       <section class="filter-panel">
         <label>Buscar
@@ -931,6 +1256,21 @@
     family.addEventListener('change', update);
     level.addEventListener('change', update);
     update();
+  }
+
+  function salutationLibraryCard(item) {
+    const summaries = {
+      'sun-a': 'Flujo simétrico de 12 pasos. Ideal para preparar y elevar el ritmo de una práctica Hatha o Vinyasa.',
+      'sun-b': 'Flujo dinámico con Silla y Guerrero I a ambos lados. Aumenta la demanda de fuerza y coordinación.',
+      'sun-classic': 'Forma tradicional de Hatha: doce posiciones que se repiten cambiando la pierna que inicia.',
+      'moon': 'Secuencia lateral y circular que recorre ambos lados con Estrella, Diosa, Triángulo y estocadas.'
+    };
+    return `
+      <article class="salutation-library-card">
+        <span class="sequence-symbol">${item.id === 'moon' ? '☾' : '☼'}</span>
+        <div><h4>${escapeHTML(item.es)}</h4><p>${escapeHTML(summaries[item.id])}</p><small>Variantes: estándar, inicial, silla, movilidad reducida y embarazo.</small></div>
+      </article>
+    `;
   }
 
   function libraryCard(pose) {
@@ -1220,7 +1560,27 @@
   }
 
   function openClassMode(classData) {
-    const poses = classData.blocks.flatMap((block, blockIndex) => block.poses.map((item, poseIndex) => ({ ...item, blockTitle: block.title, blockIndex, poseIndex })));
+    const poses = classData.blocks.flatMap((block, blockIndex) => {
+      if (!block.sequence) return block.poses.map((item, poseIndex) => ({ ...item, blockTitle: block.title, blockIndex, poseIndex }));
+      const rounds = Math.max(1, Number(block.sequence.rounds || 1));
+      const seconds = allocateSeconds(Math.round(block.minutes * 60), block.poses.length * rounds);
+      const expanded = [];
+      let timeIndex = 0;
+      for (let round = 1; round <= rounds; round += 1) {
+        block.poses.forEach((item, poseIndex) => {
+          expanded.push({
+            ...item,
+            minutes: seconds[timeIndex++] / 60,
+            blockTitle: `${block.title} · Vuelta ${round}/${rounds}`,
+            blockIndex,
+            poseIndex,
+            round,
+            roundTotal: rounds
+          });
+        });
+      }
+      return expanded;
+    });
     if (!poses.length) return;
     let index = 0;
 
@@ -1228,7 +1588,7 @@
       const item = poses[index];
       const pose = DATA.poses.find(entry => entry.id === item.poseId);
       const lang = classData.criteria.language || 'es';
-      classModeSeconds = item.minutes * 60;
+      classModeSeconds = Math.max(1, Math.round(item.minutes * 60));
       classModeRunning = false;
       clearInterval(classModeTimer);
       classModeTimer = null;
@@ -1241,9 +1601,10 @@
               <button class="icon-button" id="closeClassMode" type="button" aria-label="Cerrar modo clase">×</button>
             </header>
             <main>
-              <p class="sanskrit large">${escapeHTML(pose.sanskrit)}</p>
-              <h3>${escapeHTML(lang === 'en' ? pose.en : pose.es)}</h3>
-              <p class="class-mode-cue">${escapeHTML(lang === 'en' ? pose.cueEn : pose.cueEs)}</p>
+              <p class="sanskrit large">${escapeHTML(pose.sanskrit)}${item.side ? ` · ${escapeHTML(localizedSide(item.side, lang))}` : ''}</p>
+              <h3>${escapeHTML((lang === 'en' ? item.stepNameEn : item.stepNameEs) || (lang === 'en' ? pose.en : pose.es))}</h3>
+              <p class="class-mode-cue">${escapeHTML((lang === 'en' ? item.stepCueEn : item.stepCueEs) || (lang === 'en' ? pose.cueEn : pose.cueEs))}</p>
+              ${(lang === 'en' ? item.transitionEn : item.transitionEs) ? `<p class="transition-note"><strong>${lang === 'en' ? 'Transition' : 'Transición'}:</strong> ${escapeHTML(lang === 'en' ? item.transitionEn : item.transitionEs)}</p>` : ''}
               <div class="timer-display" id="timerDisplay">${formatTimer(classModeSeconds)}</div>
               <div class="timer-actions">
                 <button class="secondary-button" id="resetTimer" type="button">Reiniciar</button>
@@ -1272,7 +1633,7 @@
       });
       document.getElementById('toggleTimer').addEventListener('click', toggleClassTimer);
       document.getElementById('resetTimer').addEventListener('click', () => {
-        clearInterval(classModeTimer); classModeTimer = null; classModeRunning = false; classModeSeconds = item.minutes * 60;
+        clearInterval(classModeTimer); classModeTimer = null; classModeRunning = false; classModeSeconds = Math.max(1, Math.round(item.minutes * 60));
         document.getElementById('timerDisplay').textContent = formatTimer(classModeSeconds);
         document.getElementById('toggleTimer').textContent = 'Iniciar';
       });

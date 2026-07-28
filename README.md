@@ -70,3 +70,17 @@ Los datos se guardan exclusivamente en el navegador del dispositivo mediante `lo
 ## Límite de esta versión
 
 Yoga 2.0 es una herramienta de planificación para profesores. No brinda diagnósticos, recomendaciones médicas ni reemplaza la formación profesional o la valoración individual de los alumnos.
+
+
+## Actualización 1.1 — saludos solares y lunares
+
+Esta versión incorpora secuencias completas y ordenadas:
+
+- Saludo al Sol A.
+- Saludo al Sol B.
+- Saludo al Sol clásico de Hatha, realizado a derecha e izquierda.
+- Saludo a la Luna, realizado hacia ambos lados.
+
+Cada saludo puede generarse en variante estándar, inicial, con silla, para movilidad reducida o adaptada para embarazo. El profesor puede elegir entre una y seis vueltas. Dentro del editor, el saludo funciona como un bloque protegido: se cambia de manera completa para preservar el orden, las transiciones y la lateralidad.
+
+Las adaptaciones son orientaciones pedagógicas generales. La variante para embarazo requiere autorización profesional y valoración individual. Yoga 2.0 no brinda diagnósticos ni reemplaza la formación o el criterio del profesor.

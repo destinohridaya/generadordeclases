@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yoga-2-0-v1';
+const CACHE_NAME = 'yoga-2-0-v1-1';
 const APP_ASSETS = [
   './',
   './index.html',

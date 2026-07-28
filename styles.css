@@ -575,3 +575,42 @@ details p { margin: .65rem 0 0; font-size: .86rem; }
   details > * { display: block; }
   summary { display: none; }
 }
+
+
+/* Yoga 2.0 v1.1 · saludos solares y lunares */
+.salutation-config {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--line);
+}
+.compact-heading { margin-bottom: .8rem; align-items: flex-start; }
+.compact-heading small, .field-help { display: block; margin-top: .25rem; color: var(--muted); font-size: .84rem; }
+.form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.is-salutation-block {
+  border-color: rgba(217,164,65,.55);
+  background: linear-gradient(180deg, rgba(217,164,65,.08), rgba(255,253,252,.98) 180px);
+}
+.salutation-summary {
+  margin: 0 0 1rem 3.6rem;
+  padding: 1rem 1.1rem;
+  background: rgba(217,164,65,.12);
+  border: 1px solid rgba(217,164,65,.3);
+  border-radius: var(--radius-sm);
+}
+.salutation-summary > div { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; margin-bottom: .55rem; }
+.salutation-summary p { margin: .35rem 0 0; color: var(--muted); }
+.sequence-badge { display: inline-flex; padding: .25rem .6rem; border-radius: 999px; background: var(--mustard); color: #3d2d08; font-size: .72rem; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
+.is-locked-step { border-left: 3px solid rgba(217,164,65,.65); }
+.locked-step-label { display: inline-grid; place-items: center; min-width: 32px; height: 32px; opacity: .65; }
+.side-tag { display: inline-flex; margin-left: .35rem; padding: .16rem .45rem; border-radius: 999px; color: var(--terracotta-dark); background: rgba(196,104,60,.1); font-family: Inter, sans-serif; font-size: .7rem; vertical-align: middle; }
+.transition-note { margin-top: .55rem; padding: .6rem .75rem; color: var(--sage-dark); background: rgba(167,180,158,.14); border-radius: 10px; font-size: .88rem; }
+.salutation-library-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.salutation-library-card { display: grid; grid-template-columns: 54px 1fr; gap: 14px; padding: 18px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.salutation-library-card h4 { margin-bottom: .35rem; }
+.salutation-library-card p { margin-bottom: .5rem; color: var(--muted); }
+.salutation-library-card small { color: var(--terracotta-dark); font-weight: 700; }
+.sequence-symbol { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; color: var(--terracotta-dark); background: rgba(217,164,65,.2); font-size: 1.7rem; }
+@media (max-width: 680px) {
+  .form-grid.three, .salutation-library-grid { grid-template-columns: 1fr; }
+  .salutation-summary { margin-left: 0; }
+}
